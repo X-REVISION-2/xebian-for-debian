@@ -68,10 +68,14 @@ if [[ "$DE_NAME" == *"GNOME"* ]]; then
   tar -xJvf theme.tar.xz >/dev/null 2>&1
   mkdir -p "$HOME/.themes"
   mkdir -p "$HOME/.icons"
-  mv icons "$HOME/.icons/Xebian-Icons"
-  mv theme "$HOME/.themes/Xebian-Theme"
+  mv icons/ "$HOME/.icons/Xebian-Icons"
+  mv theme/ "$HOME/.themes/Xebian-Theme"
   gsettings set org.gnome.desktop.interface gtk-theme "Xebian-Theme"
   gsettings set org.gnome.desktop.interface icon-theme "Xebian-Icons"
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+  mkdir -p "$HOME/.wallpapers"
+  mv wallpaper.jpg "$HOME/.wallpapers/xebian.jpg"
+  gsettings set org.gnome.desktop.background picture-uri-dark "file:///${HOME}/.wallpapers/xebian.jpg"
   printf "${GREEN_01_FG}Xebian theme and icons applied successfully!${RESET}\n"
 else
   printf "${GREEN_01_FG}Desktop environment not supported for automatic setup.${RESET}\n"
