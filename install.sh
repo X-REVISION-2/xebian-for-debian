@@ -59,6 +59,12 @@ else
   printf "Could not determine desktop environment using XDG${RESET}\n"
 fi
 
+if [[ "$DE_NAME" == *"GNOME"* ]] then
+  printf "${GREEN_01_FG}GNOME desktop environment detected.${RESET}\n"
+else
+  printf "${GREEN_01_FG}Desktop environment not supported for automatic theme setup. Skipping to package installing.${RESET}\n"
+fi
+
 if [[ "$DE_NAME" == *"GNOME"* ]]; then
   printf "${GREEN_01_FG}Setting up for GNOME...${RESET}\n"
   mkdir -p "$HOME/.xebian"
@@ -82,67 +88,6 @@ if [[ "$DE_NAME" == *"GNOME"* ]]; then
 else
   printf "${GREEN_01_FG}Desktop environment not supported for automatic setup.${RESET}\n"
 fi
-
-if [[ "$DE_NAME" == *"KDE"* || "$XDG_CURRENT_DESKTOP" == *"KDE"* ]]; then
-  printf "${GREEN_01_FG}Setting up for KDE Plasma with Kvantum...${RESET}\n"
-
-  mkdir -p "$HOME/.xebian"
-  cd "$HOME/.xebian" || exit 1
-
-  sudo apt install -y \
-    git \
-    kvantum \
-    qt5-style-kvantum \
-    qt5-style-kvantum-themes \
-    kde-config-gtk-style \
-    unzip >/dev/null 2>&1
-
-  git clone https://github.com/X-REVISION-2/xebian-for-debian.git >/dev/null 2>&1
-  cd xebian-for-debian/kde || exit 1
-
-  # Create required KDE directories
-  mkdir -p "$HOME/.config/Kvantum"
-  mkdir -p "$HOME/.local/share/icons"
-
-  # -----------------------
-  # Kvantum Theme
-  # -----------------------
-  unzip CyberHack.zip >/dev/null 2>&1
-  mv CyberHack "$HOME/.config/Kvantum/"
-
-  kvantumkvconfig set Kvantum theme CyberHack
-  kvantumkvconfig set General theme CyberHack
-
-  # Set Qt apps to use Kvantum
-  kwriteconfig5 --file kdeglobals --group General --key widgetStyle Kvantum
-
-  # -----------------------
-  # Cursor Theme
-  # -----------------------
-  unzip breeze_green.zip >/dev/null 2>&1
-  mv breeze_green "$HOME/.local/share/icons/Breeze_Green"
-
-  kwriteconfig5 --file kcminputrc --group Mouse --key cursorTheme "Breeze_Green"
-
-  # -----------------------
-  # Icon Pack
-  # -----------------------
-  tar -xvf Sours-Full-Color.tar.gz >/dev/null 2>&1
-  mv Sours-Full-Color "$HOME/.local/share/icons/"
-
-  kwriteconfig5 --file kdeglobals --group Icons --key Theme "Sours-Full-Color"
-
-  # -----------------------
-  # Reload Plasma
-  # -----------------------
-  qdbus org.kde.KWin /KWin reconfigure >/dev/null 2>&1
-  qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell >/dev/null 2>&1
-
-  printf "${GREEN_01_FG}Kvantum theme, icons, and cursors applied successfully!${RESET}\n"
-else
-  printf "${GREEN_01_FG}Desktop environment not supported for automatic setup.${RESET}\n"
-fi
-
 
 ### ===============================
 ### Dialog + package installation
@@ -216,13 +161,10 @@ install_osint() {
     chromium
   wget -o https://raw.githubusercontent.com/X-REVISION-2/osint/refs/heads/main/dist/install.sh -O /tmp/osint_install.sh >/dev/null 2>&1
   chmod +x /tmp/osint_install.sh
-  wget -o https://github.com/X-REVISION-2/osint/raw/refs/heads/main/dist/uhc-osint -O /tmp/uhc-osint >/dev/null 2>&1
-  chmod +x /tmp/uhc-osint
-  /tmp/osint_install.sh >/dev/null 2>&1
-  rm -f /tmp/osint_install.sh
-  rm -f /tmp/uhc-osint
-  sudo apt install kali-linux-forensic -y
-}
+  git clone https://github.com/X-REVISION-2/osint.git
+  cd osint/dist
+  ./install.sh
+  }
 
 install_rtlsdr() {
   printf "${GREEN_01_FG}Installing RTL-SDR tools...${RESET}\n"
